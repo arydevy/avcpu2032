@@ -1,0 +1,137 @@
+AVCP2032
+
+AVCP2032 stands for -> Aryel'sVirtualCPU 20(GP registers) 32(bit)
+The AVCP2032 is a simple 32bit cpu/vm thing.
+
+
+========================[0][Proprieties]============================
+- 32bit
+- BigEndian
+
+========================[1][Keywords]===============================
+=Flags
+	Z - Zero Flag
+	L - Less Flag
+	E - Equal Flag
+	N - Negative Flag
+	C - Carry
+
+=Registers
+	ST - Status
+	PT - Pointer
+	GP - General Porpose
+	FL - Float
+
+	X - 32bit
+	Y - 16bit
+	W - 8bit
+	F - 32bit Float (or 64 idk?)
+
+========================[2][Flags]==================================
+            +---+---+---+---+---+---+---+---+
+            |   |   |   |   |   |   |   |   |
+            | Z | L | E | N | C |   |   |   |
+            |   |   |   |   |   |   |   |   |
+            +---+---+---+---+---+---+---+---+
+              0   1   2   3   4   5   6   7
+
+========================[3][Registers]==============================
++------------------------------------------------------------------+
+|  Name |  Type |    Size    |  Description                        |
+|-------+-------+------------+-------------------------------------+
+|  PC   |  PT   |   32bit    |  A pointer to a location in memory  |
+|  SP   |  PT   |   32bit    |  Stack Pointer                      |
+| Flags |  ST   |   16bit    |  Bits represent flags               |
+| X0-X4 |  GP   |   32bit    |  General Porpose 32 bit registers   |
+| Y0-Y4 |  GP   |   16bit    |  General Porpose 16 bit registers   |
+| W0-W4 |  GP   |   8bit     |  General Porpose 8 bit registers    |
+| F0-F4 |  FL   |   32bit    |  32bit Floting point registers      |
++-------+-------+------------+-------------------------------------+
+
+====================[4][Instruction Set]============================
++-----------+----------+-------------------------------------------+
+| Hex OP | Name | Instruction |       Description           |  AM  | //Addressing Mode
+|--------+------+-------------+-----------------------------+      |
+| 0000   | NOP  | NOP         |  No Operation               | IP   |
+| 1000   | EXT  | EXT 0       |  Exit and return number     | IM0  |
+| 2000   | HLT  | HLT         |  Halt                       | IP   |
+| 3000   | ADD  | ADD X0, 19  |  ADD number to register     | IM   |
+| 4000   | ADD  | ADD  X0, X1 |  Add register to register   | RIM  |
+| 5000   | ADDC | ADDC X0, 5  |  Add with carry             |      |
+| 6000   |      |             |                             |      |
+| 7000   | SUB  | SUB X0, 5   |  Subtract num from register | IM   |
+| 8000   | SUM  | SUM X0, X3  |  Subtract reg from reg      | RIM  |
+| 9000   | MUL  | MUL  X1, 2  |  Multiply reg by num        | IM   |
+| A000   | DIV  | DIV  X3, 5  |  Divide reg by num          | IM   |
+| B000   | AND  | AND X0, 100 |  And between reg and num    | IM   |
+| C000   | OR   | OR X0, 50   |  Or between reg and num     | IM   |
+| D000   | NOT  | NOT X0, 60  |  Not between reg and num    | IM   |
+| E000   | XOR  | XOR X0, 34  |  Xor between reg and num    | IM   |
+| F000   | NOR  | NOR X0, 64  |  Nor between reg and num    | IM   |
+| 1100   | MV   | MV X0, 5    |  Move data to register      |      |
+| 1200   | MV   | MV X0, X1   |  Move Register to register  |      |
+| 1300   | LD   | LD X0, 0xff |  Load Address to register   |      |
+| 1400   | LD   | LD X0, [X3] |  Load from addres in r to r |      |
+| 1500   | STR  | STR 0xff, 5 |  Store data in address      |      |
+| 1600   | STR  | STR 0xff, X2|  Store Register to address  |      |
+| 1700   | STR  | STR [X2],X0 |  Store in r address register|      |
+| 1800   | STR  | STR [X2],10 |  Store in r addres data     |      |
+| 1900   | PUSH | PUSH X0     |  Push register to the stack |      |
+| 2100   | PUSH | PUSH 65     |  Push data to stack         |      |
+| 2200   | POP  | POP X0      |  Pop from stack to register |      |
+|        |      |             |                             |      |
+|        |      |             |                             |      |
+|        |      |             |                             |      |
+|        |      |             |                             |      |
+|        |      |             |                             |      |
+|        |      |             |                             |      |
+|        |      |             |                             |      |
+|        |      |             |                             |      |
+|        |      |             |                             |      |
+|        |      |             |                             |      |
+|        |      |             |                             |      |
+|        |      |             |                             |      |
+|        |      |             |                             |      |
+|        |      |             |                             |      |
+|        |      |             |                             |      |
+|        |      |             |                             |      |
+|        |      |             |                             |      |
+|        |      |             |                             |      |
+|        |      |             |                             |      |
+|        |      |             |                             |      |
+|        |      |             |                             |      |
++-----------+----------+-------------+-----------------------------+
+
+========================[5][Addressing Modes]=======================
+one charachter = 4 bytes
+O - Empty
+I - OP Code
+RR - Register (takes 8 bytes)
+D - Data
+A - Address
+
++---------+---------+-------+--------------------+------------------+
+| Keyword |     Args        |  Encoding          |       Name       |
+|---------+-----------------+--------------------+------------------|
+|   IP    |  0              |  IIIIOOOOOOOOOOOO  |   Implied        |
+|   IM1   | 1 R             |  IIIIRROOOOOOOOOO  |   Imediate       |
+|   RM    | 2 R             |  IIIIRRRROOOOOOOO  |   Imediate       |
+|   IM    | 1R 1D           |  IIIIRRDDDDDDDDOO  |   Imediate       |
+|   RIM   | 2R              |  IIIIRRRROOOOOOOO  |Register Indirect | // treats register as a pointer
+|   AM    | 1R 1A           |  IIIIRRAAAAAAAAOO  |   Address        |
+|   IM0   | 1D              |  IIIIDDDDDDDDOOOO  |   Imediate       |
+|         |                 |  OOOOOOOOOOOOOOOO  |                  |
+|         |                 |  OOOOOOOOOOOOOOOO  |                  |
+|         |                 |  OOOOOOOOOOOOOOOO  |                  |
+|         |                 |  OOOOOOOOOOOOOOOO  |                  |
+|         |                 |  OOOOOOOOOOOOOOOO  |                  |
+|         |                 |  OOOOOOOOOOOOOOOO  |                  |
+|         |                 |  OOOOOOOOOOOOOOOO  |                  |
+
+
+========================[6][Interupts]==============================
++------------------------------------------------------------------+
+| OP Code   |     Name        |           Description              |
+|-----------+-----------------+------------------------------------+
+
+
