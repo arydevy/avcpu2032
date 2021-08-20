@@ -18,7 +18,6 @@ int main () {
 	writeMemory(&vm,0x30000,iNop);
 	writeMemory(&vm,0x30001,iHlt);
 	
-	bool running = true;
 
 	//Create jump table
   INST *jumpTable[iCount] ={
@@ -26,7 +25,7 @@ int main () {
 	I_HLT
 	};
 
-	while (running){
+	for(;;){
 		
 		// Fetch
 		uint8_t ins = fetch(&vm);   //Get instruction
@@ -35,7 +34,7 @@ int main () {
 		int exit = jumpTable[ins](&vm);
 
 		// Exit if true
-		if(exit){running = false;}
+		if(exit){break;}
 		vm.PC++;      //increment PC
 	}
 
